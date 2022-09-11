@@ -3,7 +3,7 @@ import { ConnectButton } from "web3uikit"
 
 const Header = () => {
     return (
-        <nav className="flex p-1 border-b-2 flex flex-row justify-between items-center">
+        <nav className="flex p-1 border-b-2 flex-row justify-between items-center">
             <h1 className="py-5 px-4 font-bold text-3xl">NFT Marketplace</h1>
             <div className="flex flex-row items-center">
                 <Link href="/">
