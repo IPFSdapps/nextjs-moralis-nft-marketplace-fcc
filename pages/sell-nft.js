@@ -1,15 +1,16 @@
 import Head from "next/head"
-import styles from "../styles/Home.module.css"
 
-export default function Home() {
+const sellNft = () => {
     return (
-        <div className={styles.container}>
+        <div>
             <Head>
-                <title>NFT Marketplace</title>
+                <title>Sell NFT | NFT Marketplace</title>
                 <meta name="description" content="NFT Marketplace" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            Home Page
+            Sell NFT
         </div>
     )
 }
+
+export default sellNft
