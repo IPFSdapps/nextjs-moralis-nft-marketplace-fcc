@@ -1,7 +1,9 @@
 import { list } from "postcss"
-import { useMoralisQuery } from "react-moralis"
+import { useMoralisQuery, useMoralis } from "react-moralis"
+import NftCard from "../components/NftCard"
 
 export default function Home() {
+    const { isWeb3Enabled } = useMoralis()
     const { data: listedNfts, isFetching: fetchingListedNfts } = useMoralisQuery(
         "ActiveItem",
         (query) => query.limit(10).descending("tokenId")
@@ -9,23 +11,33 @@ export default function Home() {
 
     console.log("Listed Nfts: ", listedNfts)
     return (
-        <div>
-            {fetchingListedNfts ? (
-                <div>Loading...</div>
-            ) : (
-                listedNfts.map((nft) => {
-                    const { price, nftAddress, tokenId, marketplaceAddress, seller } =
-                        nft.attributes
-
-                    return (
-                        <div>
-                            Price: {price} . NftAddress: {nftAddress}. TokenId: {tokenId}. Seller:{" "}
-                            {seller}. Marketplace Address: {marketplaceAddress}
-                        </div>
+        <div className="container mx-auto">
+            <h1 className="py-4 px-4 font-bold text-2xl">Recently Listed</h1>
+            <div className="flex flex-wrap">
+                {isWeb3Enabled ? (
+                    fetchingListedNfts ? (
+                        <div>Loading...</div>
+                    ) : (
+                        listedNfts.map((nft) => {
+                            console.log(nft.attributes)
+                            const { price, nftAddress, tokenId, marketplaceAddress, seller } =
+                                nft.attributes
+                            return (
+                                <NftCard
+                                    price={price}
+                                    nftAddress={nftAddress}
+                                    tokenId={tokenId}
+                                    marketplaceAddress={marketplaceAddress}
+                                    seller={seller}
+                                    key={`${nftAddress}${tokenId}`}
+                                />
+                            )
+                        })
                     )
-                })
-            )}
-            Home Page
+                ) : (
+                    <div>Web3 Currently Not Enabled</div>
+                )}
+            </div>
         </div>
     )
 }
