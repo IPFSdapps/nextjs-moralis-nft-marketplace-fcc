@@ -5,6 +5,7 @@ import nftAbi from "../constants/BasicNft.json"
 import Image from "next/image"
 import { Card } from "web3uikit"
 import { ethers } from "ethers"
+import UpdateListingModal from "./UpdateListingModal"
 
 const truncateStr = (fullStr, strLen) => {
     if (fullStr.length <= strLen) return fullStr
@@ -49,7 +50,6 @@ export default function NFTCard({ price, nftAddress, tokenId, marketplaceAddress
 
     async function updateUI() {
         const tokenURI = await getTokenURI()
-        console.log(`The TokenURI is ${tokenURI}`)
         // We are going to cheat a little here...
         if (tokenURI) {
             // IPFS Gateway: A server that will return IPFS files from a "normal" URL.
@@ -78,12 +78,27 @@ export default function NFTCard({ price, nftAddress, tokenId, marketplaceAddress
     const isOwnedByUser = seller === account || seller === undefined
     const formattedSellerAddress = isOwnedByUser ? "you" : truncateStr(seller || "", 15)
 
+    const handleCardClick = () => {
+        isOwnedByUser ? setShowModal(true) : console.log("lets buy")
+    }
+
     return (
         <div>
             <div>
                 {imageURI ? (
-                    <div style={{ margin: "16px" }}>
-                        <Card title={tokenName} description={tokenDescription}>
+                    <div className="m-1">
+                        <UpdateListingModal
+                            isVisible={showModal}
+                            tokenId={tokenId}
+                            marketplaceAddress={marketplaceAddress}
+                            nftAddress={nftAddress}
+                            onClose={hideModal}
+                        />
+                        <Card
+                            title={tokenName}
+                            description={tokenDescription}
+                            onClick={handleCardClick}
+                        >
                             <div className="p-2">
                                 <div className="flex flex-col items-end gap-2">
                                     <div>#{tokenId}</div>

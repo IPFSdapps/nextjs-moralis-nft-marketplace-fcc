@@ -9,7 +9,6 @@ export default function Home() {
         (query) => query.limit(10).descending("tokenId")
     )
 
-    console.log("Listed Nfts: ", listedNfts)
     return (
         <div className="container mx-auto">
             <h1 className="py-4 px-4 font-bold text-2xl">Recently Listed</h1>
@@ -19,7 +18,6 @@ export default function Home() {
                         <div>Loading...</div>
                     ) : (
                         listedNfts.map((nft) => {
-                            console.log(nft.attributes)
                             const { price, nftAddress, tokenId, marketplaceAddress, seller } =
                                 nft.attributes
                             return (
