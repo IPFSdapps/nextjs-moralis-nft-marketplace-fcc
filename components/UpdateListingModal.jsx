@@ -42,8 +42,12 @@ const UpdateListingModal = ({ nftAddress, tokenId, isVisible, marketplaceAddress
             }}
             onClose={onClose}
             onCloseButtonPressed={onClose}
+            onCancel={onClose}
+            title="Edit NFT Price"
+            isCentered={true}
         >
             <Input
+                style={{ marginBottom: "16px" }}
                 label="Update listing price in L1 currency (ETH)"
                 name="New listing price"
                 type="number"
