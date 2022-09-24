@@ -3,22 +3,10 @@ import { useWeb3Contract, useMoralis } from "react-moralis"
 import nftMarketplaceAbi from "../constants/NftMarketplace.json"
 import nftAbi from "../constants/BasicNft.json"
 import Image from "next/image"
-import { Card } from "web3uikit"
+import { Card, useNotification } from "web3uikit"
 import { ethers } from "ethers"
 import UpdateListingModal from "./UpdateListingModal"
-
-const truncateStr = (fullStr, strLen) => {
-    if (fullStr.length <= strLen) return fullStr
-
-    const separator = "..."
-    const seperatorLength = separator.length
-    const charsToShow = strLen - seperatorLength
-    const frontChars = Math.ceil(charsToShow / 2)
-    const backChars = Math.floor(charsToShow / 2)
-    return (
-        fullStr.substring(0, frontChars) + separator + fullStr.substring(fullStr.length - backChars)
-    )
-}
+import truncateStr from "../helper/truncate"
 
 export default function NFTCard({ price, nftAddress, tokenId, marketplaceAddress, seller }) {
     const { isWeb3Enabled, account } = useMoralis()
@@ -27,6 +15,7 @@ export default function NFTCard({ price, nftAddress, tokenId, marketplaceAddress
     const [tokenDescription, setTokenDescription] = useState("")
     const [showModal, setShowModal] = useState(false)
     const hideModal = () => setShowModal(false)
+    const dispatch = useNotification()
 
     const { runContractFunction: getTokenURI } = useWeb3Contract({
         abi: nftAbi,
@@ -50,9 +39,7 @@ export default function NFTCard({ price, nftAddress, tokenId, marketplaceAddress
 
     async function updateUI() {
         const tokenURI = await getTokenURI()
-        // We are going to cheat a little here...
         if (tokenURI) {
-            // IPFS Gateway: A server that will return IPFS files from a "normal" URL.
             const requestURL = tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/")
             const tokenURIResponse = await (await fetch(requestURL)).json()
             const imageURI = tokenURIResponse.image
@@ -60,13 +47,7 @@ export default function NFTCard({ price, nftAddress, tokenId, marketplaceAddress
             setImageURI(imageURIURL)
             setTokenName(tokenURIResponse.name)
             setTokenDescription(tokenURIResponse.description)
-            // We could render the Image on our sever, and just call our sever.
-            // For testnets & mainnet -> use moralis server hooks
-            // Have the world adopt IPFS
-            // Build our own IPFS gateway
         }
-        // get the tokenURI
-        // using the image tag from the tokenURI, get the image
     }
 
     useEffect(() => {
@@ -79,7 +60,22 @@ export default function NFTCard({ price, nftAddress, tokenId, marketplaceAddress
     const formattedSellerAddress = isOwnedByUser ? "you" : truncateStr(seller || "", 15)
 
     const handleCardClick = () => {
-        isOwnedByUser ? setShowModal(true) : console.log("lets buy")
+        isOwnedByUser
+            ? setShowModal(true)
+            : buyItem({
+                  onError: (e) => console.error(e),
+                  onSuccess: handleBuyItemSuccess,
+              })
+    }
+
+    const handleBuyItemSuccess = async (tx) => {
+        await tx.wait(1)
+        dispatch({
+            type: "success",
+            message: "Item bought!",
+            title: "Item bought",
+            position: "topR",
+        })
     }
 
     return (
