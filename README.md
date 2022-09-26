@@ -9,6 +9,7 @@
 ## Sell Page
 
         1. You can list your NFTs on the marketplace
+        2. Withdraw proceeds
 
 ## Moralis: How do we tell it to listen to our events?
 
